@@ -1,14 +1,20 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import { Box, Category } from '@/lib/types'
 
-export default function AddItemForm() {
+// Separate component for handling search params
+function AddItemFormWithParams() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const preselectedBoxId = searchParams.get('box_id')
   
+  return <AddItemFormContent preselectedBoxId={preselectedBoxId} router={router} />
+}
+
+// Main form component that receives preselected box ID as prop
+function AddItemFormContent({ preselectedBoxId, router }: { preselectedBoxId: string | null, router: any }) {
   const [formData, setFormData] = useState({
     name: '',
     description: '',
@@ -294,7 +300,7 @@ export default function AddItemForm() {
                 <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md hover:border-gray-400 dark:hover:border-gray-500 transition-colors duration-200">
                   <div className="space-y-1 text-center">
                     <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 002 2v12a2 2 0 002 2z" />
                     </svg>
                     <div className="flex text-sm text-gray-600 dark:text-gray-400">
                       <label
@@ -341,5 +347,39 @@ export default function AddItemForm() {
         </button>
       </div>
     </form>
+  )
+}
+
+// Loading fallback component
+function AddItemFormFallback() {
+  return (
+    <div className="space-y-6">
+      <div className="card">
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6 transition-colors duration-200">Item Details</h2>
+        <div className="space-y-4">
+          <div className="animate-pulse">
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-2"></div>
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          </div>
+          <div className="animate-pulse">
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-2"></div>
+            <div className="h-20 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          </div>
+          <div className="animate-pulse">
+            <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 mb-2"></div>
+            <div className="h-10 bg-gray-200 dark:bg-gray-700 rounded"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+// Main exported component with Suspense wrapper
+export default function AddItemForm() {
+  return (
+    <Suspense fallback={<AddItemFormFallback />}>
+      <AddItemFormWithParams />
+    </Suspense>
   )
 } 

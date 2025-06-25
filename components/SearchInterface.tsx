@@ -10,7 +10,6 @@ import {
   CheckCircleIcon,
   ExclamationCircleIcon,
   PencilIcon,
-  EyeIcon,
   PhotoIcon,
   ChevronLeftIcon,
   ChevronRightIcon,
@@ -349,16 +348,7 @@ export default function SearchInterface() {
                       )}
                     </div>
 
-                    <div className={`p-3 rounded-lg ${
-                      item.category_color ? `bg-opacity-10 dark:bg-opacity-20` : 'bg-gray-100 dark:bg-gray-700'
-                    } transition-colors duration-200`} style={{
-                      backgroundColor: item.category_color ? `${item.category_color}20` : undefined
-                    }}>
-                      <div 
-                        className="w-6 h-6 rounded"
-                        style={{ backgroundColor: item.category_color || '#6b7280' }}
-                      ></div>
-                    </div>
+
                     
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center space-x-2 mb-1">
@@ -378,7 +368,19 @@ export default function SearchInterface() {
                       
                       <div className="flex items-center space-x-2">
                         {item.category_name && (
-                          <span className="text-xs text-gray-600 dark:text-gray-300 bg-gray-100 dark:bg-gray-700 px-2 py-1 rounded transition-colors duration-200">
+                          <span 
+                            className={`text-xs px-2 py-1 rounded transition-colors duration-200 flex items-center ${
+                              !item.category_color ? 'bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300' : ''
+                            }`}
+                            style={{
+                              backgroundColor: item.category_color ? `${item.category_color}30` : undefined,
+                              color: item.category_color || undefined
+                            }}
+                          >
+                            <div 
+                              className="w-2 h-2 rounded-full mr-1.5"
+                              style={{ backgroundColor: item.category_color || '#6b7280' }}
+                            ></div>
                             {item.category_name}
                           </span>
                         )}
@@ -425,13 +427,6 @@ export default function SearchInterface() {
                       title="Edit item"
                     >
                       <PencilIcon className="h-5 w-5" />
-                    </Link>
-                    <Link
-                      href={`/items/${item.id}/edit`}
-                      className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
-                      title="Edit item"
-                    >
-                      <EyeIcon className="h-5 w-5" />
                     </Link>
                   </div>
                 </div>
