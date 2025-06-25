@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="en" xmlns="http://www.w3.org/1999/xhtml" xmlns:v="urn:schemas-microsoft-com:vml" xmlns:o="urn:schemas-microsoft-com:office:office">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="x-apple-disable-message-reformatting">
+    <title>Welcome to HomeStorage - Confirm Your Account</title>
+    
+    <!--[if mso]>
+    <noscript>
+        <xml>
+            <o:OfficeDocumentSettings>
+                <o:AllowPNG/>
+                <o:PixelsPerInch>96</o:PixelsPerInch>
+            </o:OfficeDocumentSettings>
+        </xml>
+    </noscript>
+    <![endif]-->
+    
+    <style>
+        /* Reset styles */
+        body, table, td, a { -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+        table, td { mso-table-lspace: 0pt; mso-table-rspace: 0pt; }
+        img { -ms-interpolation-mode: bicubic; border: 0; outline: none; text-decoration: none; }
+        
+        /* Base styles */
+        body {
+            margin: 0 !important;
+            padding: 0 !important;
+            background-color: #f3f4f6;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+        }
+        
+        /* Container */
+        .email-container {
+            max-width: 600px;
+            margin: 0 auto;
+            background-color: #ffffff;
+        }
+        
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            padding: 40px 20px;
+            text-align: center;
+        }
+        
+        .logo {
+            font-size: 32px;
+            font-weight: bold;
+            color: #ffffff;
+            text-decoration: none;
+            display: inline-block;
+            margin-bottom: 10px;
+        }
+        
+        .header-subtitle {
+            color: #e0e7ff;
+            font-size: 16px;
+            margin: 0;
+        }
+        
+        /* Content */
+        .content {
+            padding: 40px 30px;
+        }
+        
+        .welcome-title {
+            font-size: 28px;
+            font-weight: bold;
+            color: #111827;
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+        
+        .welcome-text {
+            font-size: 16px;
+            line-height: 1.6;
+            color: #4b5563;
+            margin: 0 0 30px 0;
+            text-align: center;
+        }
+        
+        /* Button */
+        .button-container {
+            text-align: center;
+            margin: 40px 0;
+        }
+        
+        .confirm-button {
+            display: inline-block;
+            padding: 16px 32px;
+            background: linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%);
+            color: #ffffff !important;
+            text-decoration: none;
+            border-radius: 8px;
+            font-weight: 600;
+            font-size: 16px;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            transition: all 0.2s ease;
+        }
+        
+        .confirm-button:hover {
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            transform: translateY(-1px);
+        }
+        
+        /* Features */
+        .features {
+            background-color: #f9fafb;
+            padding: 30px;
+            margin: 30px 0;
+            border-radius: 8px;
+        }
+        
+        .features-title {
+            font-size: 20px;
+            font-weight: 600;
+            color: #111827;
+            margin: 0 0 20px 0;
+            text-align: center;
+        }
+        
+        .feature-list {
+            list-style: none;
+            padding: 0;
+            margin: 0;
+        }
+        
+        .feature-item {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+            font-size: 14px;
+            color: #4b5563;
+        }
+        
+        .feature-icon {
+            width: 20px;
+            height: 20px;
+            background-color: #3b82f6;
+            border-radius: 50%;
+            margin-right: 12px;
+            flex-shrink: 0;
+            position: relative;
+        }
+        
+        .feature-icon::after {
+            content: "✓";
+            color: white;
+            font-size: 12px;
+            font-weight: bold;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+        }
+        
+        /* Alternative link */
+        .alt-link {
+            background-color: #f3f4f6;
+            padding: 20px;
+            margin: 30px 0;
+            border-radius: 8px;
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .alt-link-title {
+            font-size: 14px;
+            font-weight: 600;
+            color: #111827;
+            margin: 0 0 8px 0;
+        }
+        
+        .alt-link-text {
+            font-size: 14px;
+            color: #4b5563;
+            margin: 0 0 10px 0;
+            line-height: 1.5;
+        }
+        
+        .alt-link-url {
+            font-size: 12px;
+            color: #3b82f6;
+            word-break: break-all;
+            background-color: #ffffff;
+            padding: 8px;
+            border-radius: 4px;
+            border: 1px solid #e5e7eb;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: #f9fafb;
+            padding: 30px;
+            text-align: center;
+            border-top: 1px solid #e5e7eb;
+        }
+        
+        .footer-text {
+            font-size: 14px;
+            color: #6b7280;
+            margin: 0 0 15px 0;
+            line-height: 1.5;
+        }
+        
+        .footer-links {
+            margin: 20px 0;
+        }
+        
+        .footer-link {
+            color: #3b82f6;
+            text-decoration: none;
+            font-size: 14px;
+            margin: 0 15px;
+        }
+        
+        .footer-link:hover {
+            text-decoration: underline;
+        }
+        
+        /* Responsive */
+        @media only screen and (max-width: 600px) {
+            .email-container {
+                width: 100% !important;
+            }
+            
+            .content {
+                padding: 30px 20px !important;
+            }
+            
+            .header {
+                padding: 30px 20px !important;
+            }
+            
+            .welcome-title {
+                font-size: 24px !important;
+            }
+            
+            .features {
+                padding: 20px !important;
+                margin: 20px 0 !important;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="email-container">
+        <!-- Header -->
+        <div class="header">
+            <a href="{{SITE_URL}}" class="logo">📦 HomeStorage</a>
+            <p class="header-subtitle">Organize your home with confidence</p>
+        </div>
+        
+        <!-- Main Content -->
+        <div class="content">
+            <h1 class="welcome-title">Welcome to HomeStorage!</h1>
+            
+            <p class="welcome-text">
+                Hi there! 👋<br><br>
+                Thank you for signing up for HomeStorage. We're excited to help you organize and track all your belongings with ease. To get started, please confirm your email address by clicking the button below.
+            </p>
+            
+            <!-- Confirm Button -->
+            <div class="button-container">
+                <a href="{{CONFIRMATION_URL}}" class="confirm-button">
+                    Confirm Your Account
+                </a>
+            </div>
+            
+            <!-- Features Section -->
+            <div class="features">
+                <h2 class="features-title">What you can do with HomeStorage:</h2>
+                <ul class="feature-list">
+                    <li class="feature-item">
+                        <div class="feature-icon"></div>
+                        <span>Create and manage storage boxes for different rooms</span>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon"></div>
+                        <span>Add items with photos, descriptions, and categories</span>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon"></div>
+                        <span>Track item status (in box, out of box, or missing)</span>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon"></div>
+                        <span>Search and filter through all your belongings</span>
+                    </li>
+                    <li class="feature-item">
+                        <div class="feature-icon"></div>
+                        <span>Get insights with dashboard statistics</span>
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Alternative Link -->
+            <div class="alt-link">
+                <p class="alt-link-title">Having trouble with the button?</p>
+                <p class="alt-link-text">Copy and paste this link into your browser:</p>
+                <div class="alt-link-url">{{CONFIRMATION_URL}}</div>
+            </div>
+            
+            <p class="welcome-text">
+                This confirmation link will expire in 24 hours. If you didn't create an account with HomeStorage, you can safely ignore this email.
+            </p>
+        </div>
+        
+        <!-- Footer -->
+        <div class="footer">
+            <p class="footer-text">
+                Need help? We're here for you.<br>
+                Contact us if you have any questions or need assistance getting started.
+            </p>
+            
+            <div class="footer-links">
+                <a href="{{SITE_URL}}/support" class="footer-link">Support</a>
+                <a href="{{SITE_URL}}/privacy" class="footer-link">Privacy Policy</a>
+                <a href="{{SITE_URL}}/terms" class="footer-link">Terms of Service</a>
+            </div>
+            
+            <p class="footer-text">
+                © 2024 HomeStorage. All rights reserved.<br>
+                This email was sent to {{USER_EMAIL}}
+            </p>
+        </div>
+    </div>
+</body>
+</html> 
