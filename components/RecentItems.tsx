@@ -83,7 +83,7 @@ export default function RecentItems() {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4">
         <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-2 sm:mb-0 transition-colors duration-200">Recent Items</h2>
         <Link
-          href="/items"
+          href="/search"
           className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-medium self-start sm:self-auto transition-colors duration-200"
         >
           View all items →
