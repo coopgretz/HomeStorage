@@ -119,12 +119,12 @@ export default function CategoryManager({ onCategoryChange }: CategoryManagerPro
     return (
       <div className="card">
         <div className="animate-pulse">
-          <div className="h-6 bg-gray-200 rounded w-1/3 mb-4"></div>
+          <div className="h-6 bg-gray-200 dark:bg-gray-700 rounded w-1/3 mb-4 transition-colors duration-200"></div>
           <div className="space-y-3">
             {[...Array(3)].map((_, i) => (
               <div key={i} className="flex items-center space-x-3">
-                <div className="w-6 h-6 bg-gray-200 rounded"></div>
-                <div className="h-4 bg-gray-200 rounded w-1/4"></div>
+                <div className="w-6 h-6 bg-gray-200 dark:bg-gray-700 rounded transition-colors duration-200"></div>
+                <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-1/4 transition-colors duration-200"></div>
               </div>
             ))}
           </div>
@@ -136,8 +136,8 @@ export default function CategoryManager({ onCategoryChange }: CategoryManagerPro
   return (
     <div className="card">
       <div className="flex items-center justify-between mb-6">
-        <h3 className="text-lg font-semibold text-gray-900 flex items-center">
-          <TagIcon className="h-6 w-6 mr-2 text-primary-600" />
+        <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100 flex items-center transition-colors duration-200">
+          <TagIcon className="h-6 w-6 mr-2 text-primary-600 dark:text-primary-400 transition-colors duration-200" />
           Categories
         </h3>
         <button
@@ -150,20 +150,20 @@ export default function CategoryManager({ onCategoryChange }: CategoryManagerPro
       </div>
 
       {error && (
-        <div className="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+        <div className="mb-4 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded transition-colors duration-200">
           {error}
         </div>
       )}
 
       {/* Add/Edit Form */}
       {showAddForm && (
-        <div className="mb-6 p-4 bg-gray-50 rounded-lg border">
-          <h4 className="font-medium text-gray-900 mb-3">
+        <div className="mb-6 p-4 bg-gray-50 dark:bg-gray-700/50 rounded-lg border border-gray-200 dark:border-gray-600 transition-colors duration-200">
+          <h4 className="font-medium text-gray-900 dark:text-gray-100 mb-3 transition-colors duration-200">
             {editingCategory ? 'Edit Category' : 'Add New Category'}
           </h4>
           <form onSubmit={handleSubmit} className="space-y-4">
             <div>
-              <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-1">
+              <label htmlFor="name" className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1 transition-colors duration-200">
                 Name
               </label>
               <input
@@ -171,26 +171,26 @@ export default function CategoryManager({ onCategoryChange }: CategoryManagerPro
                 id="name"
                 value={formData.name}
                 onChange={(e) => setFormData(prev => ({ ...prev, name: e.target.value }))}
-                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200"
                 placeholder="Enter category name"
                 required
               />
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-2">
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-2 transition-colors duration-200">
                 Color
               </label>
               <div className="flex items-center space-x-2 mb-2">
                 <div
-                  className="w-8 h-8 rounded border-2 border-gray-300"
+                  className="w-8 h-8 rounded border-2 border-gray-300 dark:border-gray-600 transition-colors duration-200"
                   style={{ backgroundColor: formData.color }}
                 ></div>
                 <input
                   type="color"
                   value={formData.color}
                   onChange={(e) => setFormData(prev => ({ ...prev, color: e.target.value }))}
-                  className="w-16 h-8 border border-gray-300 rounded cursor-pointer"
+                  className="w-16 h-8 border border-gray-300 dark:border-gray-600 rounded cursor-pointer bg-white dark:bg-gray-700 transition-colors duration-200"
                 />
               </div>
               <div className="flex flex-wrap gap-2">
@@ -199,8 +199,8 @@ export default function CategoryManager({ onCategoryChange }: CategoryManagerPro
                     key={color}
                     type="button"
                     onClick={() => setFormData(prev => ({ ...prev, color }))}
-                    className={`w-6 h-6 rounded border-2 ${
-                      formData.color === color ? 'border-gray-600' : 'border-gray-300'
+                    className={`w-6 h-6 rounded border-2 transition-colors duration-200 ${
+                      formData.color === color ? 'border-gray-600 dark:border-gray-400' : 'border-gray-300 dark:border-gray-600'
                     }`}
                     style={{ backgroundColor: color }}
                   />
@@ -212,14 +212,14 @@ export default function CategoryManager({ onCategoryChange }: CategoryManagerPro
               <button
                 type="button"
                 onClick={resetForm}
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 transition-colors duration-200"
               >
                 Cancel
               </button>
               <button
                 type="submit"
                 disabled={submitting || !formData.name.trim()}
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 dark:bg-primary-700 hover:bg-primary-700 dark:hover:bg-primary-600 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
               >
                 {submitting ? 'Saving...' : editingCategory ? 'Update' : 'Add'}
               </button>
@@ -231,36 +231,36 @@ export default function CategoryManager({ onCategoryChange }: CategoryManagerPro
       {/* Categories List */}
       {categories.length === 0 ? (
         <div className="text-center py-8">
-          <TagIcon className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No categories yet</h3>
-          <p className="text-gray-600 mb-4">Create your first category to organize your items.</p>
+          <TagIcon className="h-12 w-12 mx-auto text-gray-400 dark:text-gray-500 mb-4 transition-colors duration-200" />
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-200">No categories yet</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-4 transition-colors duration-200">Create your first category to organize your items.</p>
         </div>
       ) : (
         <div className="space-y-2">
           {categories.map((category) => (
             <div
               key={category.id}
-              className="flex items-center justify-between p-3 bg-gray-50 rounded-lg hover:bg-gray-100 transition-colors duration-200"
+              className="flex items-center justify-between p-3 bg-gray-50 dark:bg-gray-700/50 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-600/50 transition-colors duration-200"
             >
               <div className="flex items-center space-x-3">
                 <div
                   className="w-6 h-6 rounded"
                   style={{ backgroundColor: category.color }}
                 ></div>
-                <span className="font-medium text-gray-900">{category.name}</span>
+                <span className="font-medium text-gray-900 dark:text-gray-100 transition-colors duration-200">{category.name}</span>
               </div>
               
               <div className="flex items-center space-x-2">
                 <button
                   onClick={() => startEdit(category)}
-                  className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-200 rounded-lg transition-colors duration-200"
+                  className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-200 dark:hover:bg-gray-600 rounded-lg transition-colors duration-200"
                   title="Edit category"
                 >
                   <PencilIcon className="h-4 w-4" />
                 </button>
                 <button
                   onClick={() => handleDelete(category.id)}
-                  className="p-2 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors duration-200"
+                  className="p-2 text-gray-400 dark:text-gray-500 hover:text-red-600 dark:hover:text-red-400 hover:bg-red-50 dark:hover:bg-red-900/20 rounded-lg transition-colors duration-200"
                   title="Delete category"
                 >
                   <TrashIcon className="h-4 w-4" />

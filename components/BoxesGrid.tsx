@@ -1,22 +1,19 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState, useEffect } from 'react'
 import { Box } from '@/lib/types'
-import {
-  ArchiveBoxIcon,
-  QrCodeIcon,
-  EyeIcon,
-  PhotoIcon,
-  PlusIcon,
-  PencilIcon,
-} from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import Image from 'next/image'
+import {
+  ArchiveBoxIcon,
+  PencilIcon,
+  PlusIcon,
+  PhotoIcon,
+} from '@heroicons/react/24/outline'
 
 export default function BoxesGrid() {
   const [boxes, setBoxes] = useState<Box[]>([])
   const [loading, setLoading] = useState(true)
-  const [generatingQR, setGeneratingQR] = useState<number | null>(null)
 
   useEffect(() => {
     fetchBoxes()
@@ -36,158 +33,113 @@ export default function BoxesGrid() {
     }
   }
 
-  const generateQRCode = async (boxId: number) => {
-    try {
-      setGeneratingQR(boxId)
-      const response = await fetch(`/api/boxes/${boxId}/qr`, {
-        method: 'POST',
-      })
-
-      if (response.ok) {
-        const data = await response.json()
-        setBoxes(boxes.map(box => 
-          box.id === boxId ? { ...box, qr_code_path: data.qrCodePath } : box
-        ))
-      }
-    } catch (error) {
-      console.error('Error generating QR code:', error)
-    } finally {
-      setGeneratingQR(null)
-    }
-  }
-
   if (loading) {
     return (
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-        {[...Array(6)].map((_, i) => (
-          <div key={i} className="card animate-pulse">
-            <div className="w-full h-48 bg-gray-200 rounded-lg mb-4"></div>
-            <div className="h-6 bg-gray-200 rounded w-3/4 mb-2"></div>
-            <div className="h-4 bg-gray-200 rounded w-1/2"></div>
-          </div>
-        ))}
+      <div>
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">Your Storage Boxes</h2>
+        </div>
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+          {[...Array(8)].map((_, i) => (
+            <div key={i} className="card animate-pulse">
+              <div className="h-48 bg-gray-200 dark:bg-gray-700 rounded-lg mb-4 transition-colors duration-200"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2 transition-colors duration-200"></div>
+              <div className="h-3 bg-gray-200 dark:bg-gray-700 rounded w-2/3 transition-colors duration-200"></div>
+            </div>
+          ))}
+        </div>
       </div>
     )
   }
 
   return (
     <div>
-      <div className="mb-6">
-        <p className="text-sm text-gray-600">
-          {boxes.length} box{boxes.length !== 1 ? 'es' : ''} total
-        </p>
+      <div className="flex items-center justify-between mb-6">
+        <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">
+          Your Storage Boxes ({boxes.length})
+        </h2>
+        <Link
+          href="/boxes/add"
+          className="inline-flex items-center px-4 py-2 bg-primary-600 dark:bg-primary-700 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors duration-200"
+        >
+          <PlusIcon className="h-4 w-4 mr-2" />
+          Add Box
+        </Link>
       </div>
 
       {boxes.length === 0 ? (
         <div className="card text-center py-12">
-          <ArchiveBoxIcon className="h-12 w-12 mx-auto text-gray-400 mb-4" />
-          <h3 className="text-lg font-medium text-gray-900 mb-2">No boxes yet</h3>
-          <p className="text-gray-600 mb-4">Create your first storage box to get started.</p>
+          <ArchiveBoxIcon className="h-12 w-12 mx-auto text-gray-400 dark:text-gray-500 mb-4 transition-colors duration-200" />
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-200">No boxes yet</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-6 transition-colors duration-200">
+            Create your first storage box to get started organizing your items.
+          </p>
           <Link
             href="/boxes/add"
-            className="btn-primary inline-flex items-center"
+            className="inline-flex items-center px-4 py-2 bg-primary-600 dark:bg-primary-700 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors duration-200"
           >
             <PlusIcon className="h-4 w-4 mr-2" />
-            Add First Box
+            Create First Box
           </Link>
         </div>
       ) : (
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
           {boxes.map((box) => (
-            <div key={box.id} className="card hover:shadow-lg transition-shadow duration-200">
-              {/* Box Image */}
-              <div className="relative w-full h-48 bg-gray-100 rounded-lg mb-4 overflow-hidden">
-                {box.image_path ? (
-                  <Image
-                    src={box.image_path}
-                    alt={`Box ${box.box_number}`}
-                    fill
-                    className="object-cover"
-                  />
-                ) : (
-                  <div className="w-full h-full flex items-center justify-center">
-                    <ArchiveBoxIcon className="h-16 w-16 text-gray-400" />
-                  </div>
-                )}
-                
-                {/* QR Code Overlay */}
-                {box.qr_code_path && (
-                  <div className="absolute top-2 right-2 bg-white rounded-lg p-2 shadow-lg">
+            <div key={box.id} className="card hover:shadow-lg dark:hover:shadow-xl transition-shadow duration-300 group relative">
+              <Link href={`/box/${box.id}`} className="block">
+                {/* Box Image */}
+                <div className="relative h-48 bg-gray-100 dark:bg-gray-700 rounded-lg mb-4 overflow-hidden transition-colors duration-200">
+                  {box.image_path ? (
                     <Image
-                      src={box.qr_code_path}
-                      alt="QR Code"
-                      width={40}
-                      height={40}
-                      className="rounded"
+                      src={box.image_path}
+                      alt={`Box ${box.box_number}`}
+                      fill
+                      className="object-cover group-hover:scale-105 transition-transform duration-300"
                     />
-                  </div>
-                )}
-              </div>
-
-              {/* Box Info */}
-              <div className="flex-1">
-                <div className="flex items-center justify-between mb-2">
-                  <h3 className="text-lg font-semibold text-gray-900">
-                    Box #{box.box_number}
-                  </h3>
-                  <span className="text-sm text-gray-500">{box.location}</span>
-                </div>
-                
-                {box.label && (
-                  <h4 className="text-gray-700 font-medium mb-1">{box.label}</h4>
-                )}
-                
-                {box.description && (
-                  <p className="text-gray-600 text-sm mb-4 line-clamp-2">
-                    {box.description}
-                  </p>
-                )}
-              </div>
-
-              {/* Actions */}
-              <div className="flex items-center justify-between pt-4 border-t border-gray-200">
-                <div className="flex space-x-2">
-                  <Link
-                    href={`/box/${box.id}`}
-                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-                    title="View contents"
-                  >
-                    <EyeIcon className="h-5 w-5" />
-                  </Link>
-                  
-                  <Link
-                    href={`/boxes/${box.id}/edit`}
-                    className="p-2 text-gray-400 hover:text-gray-600 hover:bg-gray-50 rounded-lg transition-colors duration-200"
-                    title="Edit box"
-                  >
-                    <PencilIcon className="h-5 w-5" />
-                  </Link>
-                  
-                  {!box.qr_code_path ? (
-                    <button
-                      onClick={() => generateQRCode(box.id)}
-                      disabled={generatingQR === box.id}
-                      className="p-2 text-primary-600 hover:text-primary-700 hover:bg-primary-50 rounded-lg transition-colors duration-200 disabled:opacity-50"
-                      title="Generate QR code"
-                    >
-                      {generatingQR === box.id ? (
-                        <div className="h-5 w-5 animate-spin rounded-full border-2 border-primary-600 border-t-transparent"></div>
-                      ) : (
-                        <QrCodeIcon className="h-5 w-5" />
-                      )}
-                    </button>
                   ) : (
-                    <div className="p-2 text-green-600" title="QR code ready">
-                      <QrCodeIcon className="h-5 w-5" />
+                    <div className="w-full h-full flex items-center justify-center">
+                      <ArchiveBoxIcon className="h-16 w-16 text-gray-300 dark:text-gray-600 group-hover:text-gray-400 dark:group-hover:text-gray-500 transition-colors duration-300" />
+                    </div>
+                  )}
+                  
+                  {/* Box Number Badge */}
+                  <div className="absolute top-2 left-2 bg-primary-600 dark:bg-primary-700 text-white px-2 py-1 rounded text-sm font-medium">
+                    #{box.box_number}
+                  </div>
+                </div>
+
+                <div className="mb-4">
+                  <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-1 group-hover:text-primary-600 dark:group-hover:text-primary-400 transition-colors duration-200">
+                    {box.label || `Box ${box.box_number}`}
+                  </h3>
+                  {box.description && (
+                    <p className="text-sm text-gray-600 dark:text-gray-400 line-clamp-2 mb-2 transition-colors duration-200">
+                      {box.description}
+                    </p>
+                  )}
+                  {box.location && (
+                    <div className="flex items-center text-xs text-gray-500 dark:text-gray-400 transition-colors duration-200">
+                      📍 {box.location}
                     </div>
                   )}
                 </div>
+              </Link>
 
+              {/* Action Buttons */}
+              <div className="flex items-center justify-between pt-4 border-t border-gray-100 dark:border-gray-700 transition-colors duration-200">
                 <Link
                   href={`/box/${box.id}`}
-                  className="text-sm font-medium text-primary-600 hover:text-primary-700"
+                  className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-medium transition-colors duration-200"
                 >
-                  View Contents →
+                  View Contents
+                </Link>
+                <Link
+                  href={`/boxes/${box.id}/edit`}
+                  className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
+                  title="Edit box"
+                  onClick={(e) => e.stopPropagation()}
+                >
+                  <PencilIcon className="h-4 w-4" />
                 </Link>
               </div>
             </div>

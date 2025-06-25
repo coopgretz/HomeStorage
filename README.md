@@ -1,67 +1,117 @@
-# Home Storage System
+# 🏠 Home Storage System
 
-A web-based application for managing and tracking items in numbered storage boxes in your garage.
+A modern web application for organizing and tracking items in your home storage boxes. Built with Next.js, React, TypeScript, and Supabase.
 
-## Features
+## ✨ Features
 
-- **Box Management**: Organize items by numbered storage boxes
-- **Item Tracking**: Add, edit, and remove items from your inventory
-- **Status Management**: Track whether items are currently in their assigned box or out
-- **Search Functionality**: Quickly find items across your entire storage system
-- **Responsive UI**: Works on desktop, tablet, and mobile devices
+- 📦 **Box Management** - Create and organize numbered storage boxes
+- 🔍 **Smart Search** - Find items by name, description, or category
+- 🏷️ **Categories** - Color-coded organization system
+- 📍 **Location Tracking** - Track items by room/location
+- 📱 **Mobile-First Design** - Responsive interface for all devices
+- 🖼️ **Photo Support** - Add photos to boxes and items
+- ✅ **Status Tracking** - Mark items as in/out of box
+- 👤 **Multi-User** - Secure authentication with Supabase
+- 🌐 **Real-time** - Instant updates across devices
 
-## Getting Started
+## 🚀 Quick Start
 
-1. Install dependencies:
+### Prerequisites
+
+- Node.js 18+ and npm
+- A Supabase account and project
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone <your-repo-url>
+   cd home-storage-system
+   ```
+
+2. **Install dependencies**
    ```bash
    npm install
    ```
 
-2. Initialize the database:
+3. **Set up environment variables**
    ```bash
-   npm run init-db
+   cp .env.example .env.local
+   ```
+   
+   Update `.env.local` with your Supabase credentials:
+   ```env
+   NEXT_PUBLIC_SUPABASE_URL=your_supabase_project_url
+   NEXT_PUBLIC_SUPABASE_ANON_KEY=your_supabase_anon_key
+   NEXT_PUBLIC_SITE_URL=http://localhost:3000
    ```
 
-3. Start the development server:
+4. **Set up your Supabase database**
+   - Go to your Supabase project dashboard
+   - Navigate to SQL Editor
+   - Run the SQL from `supabase-schema.sql`
+
+5. **Start the development server**
    ```bash
    npm run dev
    ```
 
-4. Open [http://localhost:3000](http://localhost:3000) in your browser
+6. **Open your browser**
+   Navigate to [http://localhost:3000](http://localhost:3000)
 
-## Usage
+## 🌐 Deployment
 
-### Adding Items
-1. Click "Add Item" button
-2. Enter item details (name, description, category)
-3. Assign to a box number
-4. Set initial status (In Box/Out of Box)
+### Deploy to Vercel
 
-### Searching Items
-- Use the search bar to find items by name, description, or category
-- Filter by box number or status
-- View detailed information for each item
+1. **Push your code to GitHub**
 
-### Managing Boxes
-- View all items in a specific box
-- See box capacity and organization
-- Move items between boxes
+2. **Connect to Vercel**
+   - Go to [vercel.com](https://vercel.com)
+   - Import your GitHub repository
 
-### Status Tracking
-- Mark items as "Out of Box" when you take them out
-- Mark them as "In Box" when you return them
-- Track borrowing and usage patterns
+3. **Set environment variables in Vercel**
+   - `NEXT_PUBLIC_SUPABASE_URL`
+   - `NEXT_PUBLIC_SUPABASE_ANON_KEY`
+   - `NEXT_PUBLIC_SITE_URL` (set to your Vercel domain)
 
-## Database Schema
+4. **Update Supabase Auth settings**
+   - In Supabase dashboard: Authentication > URL Configuration
+   - Add your Vercel domain to "Site URL"
+   - Add your Vercel domain to "Redirect URLs"
 
-The system uses SQLite with the following tables:
-- `boxes`: Storage box information
-- `items`: Individual item records
-- `categories`: Item categorization
+## 📱 How to Use
 
-## Technology Stack
+1. **Sign up/Login** - Create an account or sign in
+2. **Create categories** - Set up color-coded categories for your items
+3. **Add boxes** - Create numbered storage boxes with photos
+4. **Add items** - Add items to boxes with descriptions and photos
+5. **Search & Filter** - Find items by name, category, or location
+6. **Track status** - Mark items as in/out of box
 
-- **Frontend**: Next.js with React and TypeScript
+## 🛠️ Technology Stack
+
+- **Frontend**: Next.js 14, React 18, TypeScript
 - **Styling**: Tailwind CSS
-- **Database**: SQLite with better-sqlite3
-- **Icons**: Heroicons 
+- **Icons**: Heroicons
+- **Database**: Supabase (PostgreSQL)
+- **Authentication**: Supabase Auth
+- **File Storage**: Local filesystem (with API routes)
+- **Deployment**: Vercel
+
+## 📋 Database Schema
+
+The app uses three main tables:
+
+- **boxes** - Storage box information
+- **items** - Individual items in boxes
+- **categories** - Item categorization system
+
+All tables include Row Level Security (RLS) for multi-user support.
+
+## 🤝 Contributing
+
+Contributions are welcome! Please feel free to submit a Pull Request.
+
+## 📄 License
+
+This project is licensed under the MIT License. 

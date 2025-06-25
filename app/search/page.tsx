@@ -8,10 +8,10 @@ export default function SearchPage() {
       <main className="flex-1">
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           <div className="mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100 transition-colors duration-200">
               Search Items
             </h1>
-            <p className="mt-2 text-sm sm:text-base text-gray-600">
+            <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400 transition-colors duration-200">
               Find items across your entire storage system
             </p>
           </div>

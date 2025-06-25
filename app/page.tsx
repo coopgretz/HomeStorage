@@ -11,10 +11,10 @@ export default function Dashboard() {
         <div className="max-w-7xl mx-auto py-6 px-4 sm:px-6 lg:px-8">
           {/* Header */}
           <div className="mb-8">
-            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900 dark:text-gray-100">
               Storage Dashboard
             </h1>
-            <p className="mt-2 text-sm sm:text-base text-gray-600">
+            <p className="mt-2 text-sm sm:text-base text-gray-600 dark:text-gray-400">
               Manage your home storage system and track your items
             </p>
           </div>

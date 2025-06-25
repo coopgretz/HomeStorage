@@ -140,13 +140,13 @@ export default function EditBoxPage({ params }: { params: { id: string } }) {
 
   if (loadingBox) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 transition-colors duration-200">
             <div className="animate-pulse">
-              <div className="h-8 bg-gray-200 rounded mb-4"></div>
-              <div className="h-4 bg-gray-200 rounded mb-2"></div>
-              <div className="h-4 bg-gray-200 rounded w-2/3"></div>
+              <div className="h-8 bg-gray-200 dark:bg-gray-700 rounded mb-4 transition-colors duration-200"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded mb-2 transition-colors duration-200"></div>
+              <div className="h-4 bg-gray-200 dark:bg-gray-700 rounded w-2/3 transition-colors duration-200"></div>
             </div>
           </div>
         </div>
@@ -156,15 +156,15 @@ export default function EditBoxPage({ params }: { params: { id: string } }) {
 
   if (error && !box) {
     return (
-      <div className="min-h-screen bg-gray-50 py-8">
+      <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
         <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="bg-white shadow rounded-lg p-6">
+          <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 transition-colors duration-200">
             <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-900 mb-4">Error</h1>
-              <p className="text-gray-600 mb-4">{error}</p>
+              <h1 className="text-2xl font-bold text-gray-900 dark:text-gray-100 mb-4 transition-colors duration-200">Error</h1>
+              <p className="text-gray-600 dark:text-gray-400 mb-4 transition-colors duration-200">{error}</p>
               <Link
                 href="/boxes"
-                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 hover:bg-primary-700"
+                className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-primary-600 dark:bg-primary-700 hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors duration-200"
               >
                 Back to Boxes
               </Link>
@@ -176,30 +176,30 @@ export default function EditBoxPage({ params }: { params: { id: string } }) {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <Link
             href="/boxes"
-            className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 mb-4"
+            className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mb-4 transition-colors duration-200"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-1" />
             Back to Boxes
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-            <ArchiveBoxIcon className="h-8 w-8 mr-3 text-primary-600" />
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-gray-100 flex items-center transition-colors duration-200">
+            <ArchiveBoxIcon className="h-8 w-8 mr-3 text-primary-600 dark:text-primary-400 transition-colors duration-200" />
             Edit Box {box?.box_number}
           </h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-gray-600 dark:text-gray-400 transition-colors duration-200">
             Update your storage box information
           </p>
         </div>
 
         {/* Form */}
-        <div className="bg-white shadow rounded-lg p-6">
+        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 transition-colors duration-200">
           {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-700 text-red-700 dark:text-red-300 px-4 py-3 rounded transition-colors duration-200">
               {error}
             </div>
           )}
@@ -207,7 +207,7 @@ export default function EditBoxPage({ params }: { params: { id: string } }) {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Box Number */}
             <div>
-              <label htmlFor="box_number" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="box_number" className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
                 Box Number *
               </label>
               <input
@@ -218,14 +218,14 @@ export default function EditBoxPage({ params }: { params: { id: string } }) {
                 min="1"
                 value={formData.box_number}
                 onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200"
                 placeholder="Enter box number"
               />
             </div>
 
             {/* Label */}
             <div>
-              <label htmlFor="label" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
                 Label
               </label>
               <input
@@ -234,14 +234,14 @@ export default function EditBoxPage({ params }: { params: { id: string } }) {
                 name="label"
                 value={formData.label}
                 onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200"
                 placeholder="Enter a descriptive label"
               />
             </div>
 
             {/* Description */}
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
                 Description
               </label>
               <textarea
@@ -250,14 +250,14 @@ export default function EditBoxPage({ params }: { params: { id: string } }) {
                 rows={3}
                 value={formData.description}
                 onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200"
                 placeholder="Enter a detailed description"
               />
             </div>
 
             {/* Location */}
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
                 Location
               </label>
               <select
@@ -265,7 +265,7 @@ export default function EditBoxPage({ params }: { params: { id: string } }) {
                 name="location"
                 value={formData.location}
                 onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-primary-500 focus:border-primary-500 dark:focus:ring-primary-400 dark:focus:border-primary-400 transition-colors duration-200"
               >
                 <option value="Garage">Garage</option>
                 <option value="Basement">Basement</option>
@@ -279,7 +279,7 @@ export default function EditBoxPage({ params }: { params: { id: string } }) {
 
             {/* Image Upload */}
             <div>
-              <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="image" className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
                 Box Photo
               </label>
               
@@ -289,28 +289,28 @@ export default function EditBoxPage({ params }: { params: { id: string } }) {
                     <img
                       src={imagePreview}
                       alt="Box preview"
-                      className="h-32 w-32 object-cover rounded-lg border"
+                      className="h-32 w-32 object-cover rounded-lg border border-gray-300 dark:border-gray-600 transition-colors duration-200"
                     />
                     <button
                       type="button"
                       onClick={handleRemoveImage}
-                      className="absolute -top-2 -right-2 bg-red-500 text-white rounded-full p-1 hover:bg-red-600"
+                      className="absolute -top-2 -right-2 bg-red-500 dark:bg-red-600 text-white rounded-full p-1 hover:bg-red-600 dark:hover:bg-red-500 transition-colors duration-200"
                     >
                       <XMarkIcon className="h-4 w-4" />
                     </button>
                   </div>
-                  <p className="mt-2 text-sm text-gray-500">
+                  <p className="mt-2 text-sm text-gray-500 dark:text-gray-400 transition-colors duration-200">
                     Click the X to remove the current image, or upload a new one to replace it.
                   </p>
                 </div>
               ) : (
-                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
+                <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md bg-gray-50 dark:bg-gray-700/50 transition-colors duration-200">
                   <div className="space-y-1 text-center">
-                    <PhotoIcon className="mx-auto h-12 w-12 text-gray-400" />
-                    <div className="flex text-sm text-gray-600">
+                    <PhotoIcon className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500 transition-colors duration-200" />
+                    <div className="flex text-sm text-gray-600 dark:text-gray-400 transition-colors duration-200">
                       <label
                         htmlFor="image"
-                        className="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
+                        className="relative cursor-pointer bg-white dark:bg-gray-700 rounded-md font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 dark:focus-within:ring-primary-400 dark:focus-within:ring-offset-gray-800 transition-colors duration-200"
                       >
                         <span>Upload a photo</span>
                         <input
@@ -324,7 +324,7 @@ export default function EditBoxPage({ params }: { params: { id: string } }) {
                       </label>
                       <p className="pl-1">or drag and drop</p>
                     </div>
-                    <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
+                    <p className="text-xs text-gray-500 dark:text-gray-400 transition-colors duration-200">PNG, JPG, GIF up to 10MB</p>
                   </div>
                 </div>
               )}
@@ -334,14 +334,14 @@ export default function EditBoxPage({ params }: { params: { id: string } }) {
             <div className="flex justify-end space-x-3">
               <Link
                 href="/boxes"
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                className="px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm text-sm font-medium text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-primary-400 dark:focus:ring-offset-gray-800 transition-colors duration-200"
               >
                 Cancel
               </Link>
               <button
                 type="submit"
                 disabled={loading}
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 dark:bg-primary-700 hover:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 dark:focus:ring-primary-400 dark:focus:ring-offset-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
               >
                 {loading ? 'Updating...' : 'Update Box'}
               </button>

@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import fs from 'fs'
-import path from 'path'
+import { deleteImage } from '@/lib/storage'
 
 export async function GET(
   request: NextRequest,
@@ -20,7 +19,6 @@ export async function GET(
     }
 
     const id = parseInt(params.id)
-    
     if (isNaN(id)) {
       return NextResponse.json(
         { error: 'Invalid item ID' },
@@ -32,21 +30,34 @@ export async function GET(
       .from('items')
       .select(`
         *,
-        box:boxes(id, box_number, label),
+        box:boxes(id, box_number, label, location),
         category:categories(id, name, color)
       `)
       .eq('id', id)
       .eq('user_id', user.id)
       .single()
-    
-    if (error || !item) {
-      return NextResponse.json(
-        { error: 'Item not found' },
-        { status: 404 }
-      )
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Item not found' },
+          { status: 404 }
+        )
+      }
+      throw error
     }
 
-    return NextResponse.json(item)
+    // Transform the data to flatten the box and category information
+    const transformedItem = {
+      ...item,
+      box_number: item.box?.box_number,
+      box_label: item.box?.label,
+      box_location: item.box?.location,
+      category_name: item.category?.name,
+      category_color: item.category?.color,
+    }
+
+    return NextResponse.json(transformedItem)
   } catch (error) {
     console.error('Item GET error:', error)
     return NextResponse.json(
@@ -73,7 +84,6 @@ export async function PUT(
     }
 
     const id = parseInt(params.id)
-    
     if (isNaN(id)) {
       return NextResponse.json(
         { error: 'Invalid item ID' },
@@ -84,23 +94,22 @@ export async function PUT(
     const body = await request.json()
     const { name, description, box_id, category_id, quantity, notes, remove_image } = body
 
-    // Validate required fields
-    if (!name || !name.trim()) {
+    if (!name) {
       return NextResponse.json(
-        { error: 'Item name is required' },
+        { error: 'Name is required' },
         { status: 400 }
       )
     }
 
-    // Check if item exists and belongs to user
+    // Get existing item to check for image deletion
     const { data: existingItem, error: fetchError } = await supabase
       .from('items')
       .select('*')
       .eq('id', id)
       .eq('user_id', user.id)
       .single()
-    
-    if (fetchError || !existingItem) {
+
+    if (fetchError) {
       return NextResponse.json(
         { error: 'Item not found' },
         { status: 404 }
@@ -153,14 +162,11 @@ export async function PUT(
     }
 
     if (remove_image && existingItem.image_path) {
-      // Remove the old image file
+      // Remove the old image from Supabase Storage
       try {
-        const imagePath = path.join(process.cwd(), 'public', existingItem.image_path)
-        if (fs.existsSync(imagePath)) {
-          fs.unlinkSync(imagePath)
-        }
+        await deleteImage(supabase, existingItem.image_path)
       } catch (error) {
-        console.warn('Failed to delete old image file:', error)
+        console.warn('Failed to delete old image:', error)
       }
       updateData.image_path = null
     }
@@ -173,7 +179,7 @@ export async function PUT(
       .eq('user_id', user.id)
       .select(`
         *,
-        box:boxes(id, box_number, label),
+        box:boxes(id, box_number, label, location),
         category:categories(id, name, color)
       `)
       .single()
@@ -186,11 +192,83 @@ export async function PUT(
       )
     }
 
-    return NextResponse.json(updatedItem)
+    // Transform the data to flatten the box and category information
+    const transformedItem = {
+      ...updatedItem,
+      box_number: updatedItem.box?.box_number,
+      box_label: updatedItem.box?.label,
+      box_location: updatedItem.box?.location,
+      category_name: updatedItem.category?.name,
+      category_color: updatedItem.category?.color,
+    }
+
+    return NextResponse.json(transformedItem)
   } catch (error) {
     console.error('Item PUT error:', error)
     return NextResponse.json(
       { error: 'Failed to update item' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const supabase = await createClient()
+    
+    // Get user to ensure they're authenticated
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const id = parseInt(params.id)
+    if (isNaN(id)) {
+      return NextResponse.json(
+        { error: 'Invalid item ID' },
+        { status: 400 }
+      )
+    }
+
+    // Get item to check for image deletion
+    const { data: item } = await supabase
+      .from('items')
+      .select('image_path')
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .single()
+
+    // Delete associated image if exists
+    if (item?.image_path) {
+      try {
+        await deleteImage(supabase, item.image_path)
+      } catch (error) {
+        console.warn('Failed to delete item image:', error)
+      }
+    }
+
+    // Delete the item
+    const { error } = await supabase
+      .from('items')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id)
+
+    if (error) {
+      throw error
+    }
+
+    return NextResponse.json({ message: 'Item deleted successfully' })
+  } catch (error) {
+    console.error('Item DELETE error:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete item' },
       { status: 500 }
     )
   }

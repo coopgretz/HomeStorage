@@ -1,7 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import { createClient } from '@/lib/supabase/server'
-import fs from 'fs'
-import path from 'path'
+import { deleteImage } from '@/lib/storage'
 
 export async function GET(
   request: NextRequest,
@@ -20,7 +19,6 @@ export async function GET(
     }
 
     const id = parseInt(params.id)
-    
     if (isNaN(id)) {
       return NextResponse.json(
         { error: 'Invalid box ID' },
@@ -34,12 +32,15 @@ export async function GET(
       .eq('id', id)
       .eq('user_id', user.id)
       .single()
-    
-    if (error || !box) {
-      return NextResponse.json(
-        { error: 'Box not found' },
-        { status: 404 }
-      )
+
+    if (error) {
+      if (error.code === 'PGRST116') {
+        return NextResponse.json(
+          { error: 'Box not found' },
+          { status: 404 }
+        )
+      }
+      throw error
     }
 
     return NextResponse.json(box)
@@ -69,7 +70,6 @@ export async function PUT(
     }
 
     const id = parseInt(params.id)
-    
     if (isNaN(id)) {
       return NextResponse.json(
         { error: 'Invalid box ID' },
@@ -80,7 +80,6 @@ export async function PUT(
     const body = await request.json()
     const { box_number, label, description, location, remove_image } = body
 
-    // Validate required fields
     if (!box_number) {
       return NextResponse.json(
         { error: 'Box number is required' },
@@ -88,56 +87,50 @@ export async function PUT(
       )
     }
 
-    // Check if box exists and belongs to user
+    // Get existing box to check for image deletion
     const { data: existingBox, error: fetchError } = await supabase
       .from('boxes')
       .select('*')
       .eq('id', id)
       .eq('user_id', user.id)
       .single()
-    
-    if (fetchError || !existingBox) {
+
+    if (fetchError) {
       return NextResponse.json(
         { error: 'Box not found' },
         { status: 404 }
       )
     }
 
-    // Check if box number is already taken by another box
-    if (box_number !== existingBox.box_number) {
-      const { data: conflictBox } = await supabase
-        .from('boxes')
-        .select('id')
-        .eq('box_number', box_number)
-        .eq('user_id', user.id)
-        .neq('id', id)
-        .single()
-      
-      if (conflictBox) {
-        return NextResponse.json(
-          { error: 'Box number already exists' },
-          { status: 400 }
-        )
-      }
+    // Check if box number already exists for this user (excluding current box)
+    const { data: duplicateBox } = await supabase
+      .from('boxes')
+      .select('id')
+      .eq('user_id', user.id)
+      .eq('box_number', box_number)
+      .neq('id', id)
+      .single()
+
+    if (duplicateBox) {
+      return NextResponse.json(
+        { error: 'Box number already exists' },
+        { status: 409 }
+      )
     }
 
-    // Handle image removal
     let updateData: any = {
       box_number,
-      label: label || null,
-      description: description || null,
+      label: label?.trim() || null,
+      description: description?.trim() || null,
       location: location || 'Garage',
     }
 
     if (remove_image && existingBox.image_path) {
-      // Remove the old image file
+      // Remove the old image from Supabase Storage
       try {
-        const imagePath = path.join(process.cwd(), 'public', existingBox.image_path)
-        if (fs.existsSync(imagePath)) {
-          fs.unlinkSync(imagePath)
-        }
+        await deleteImage(supabase, existingBox.image_path)
       } catch (error) {
-        console.warn('Failed to delete old image file:', error)
+        console.warn('Failed to delete old image:', error)
       }
       updateData.image_path = null
     }
@@ -164,6 +157,68 @@ export async function PUT(
     console.error('Box PUT error:', error)
     return NextResponse.json(
       { error: 'Failed to update box' },
+      { status: 500 }
+    )
+  }
+}
+
+export async function DELETE(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  try {
+    const supabase = await createClient()
+    
+    // Get user to ensure they're authenticated
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
+    const id = parseInt(params.id)
+    if (isNaN(id)) {
+      return NextResponse.json(
+        { error: 'Invalid box ID' },
+        { status: 400 }
+      )
+    }
+
+    // Get box to check for image deletion
+    const { data: box } = await supabase
+      .from('boxes')
+      .select('image_path')
+      .eq('id', id)
+      .eq('user_id', user.id)
+      .single()
+
+    // Delete associated image if exists
+    if (box?.image_path) {
+      try {
+        await deleteImage(supabase, box.image_path)
+      } catch (error) {
+        console.warn('Failed to delete box image:', error)
+      }
+    }
+
+    // Delete the box (items will be cascade deleted due to foreign key constraint)
+    const { error } = await supabase
+      .from('boxes')
+      .delete()
+      .eq('id', id)
+      .eq('user_id', user.id)
+
+    if (error) {
+      throw error
+    }
+
+    return NextResponse.json({ message: 'Box deleted successfully' })
+  } catch (error) {
+    console.error('Box DELETE error:', error)
+    return NextResponse.json(
+      { error: 'Failed to delete box' },
       { status: 500 }
     )
   }

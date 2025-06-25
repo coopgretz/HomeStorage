@@ -45,7 +45,6 @@ CREATE TABLE IF NOT EXISTS boxes (
   description TEXT,
   location TEXT,
   image_path TEXT,
-  qr_code_path TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW(),
   UNIQUE(user_id, box_number)
 );

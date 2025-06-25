@@ -25,11 +25,16 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
 
     try {
       if (isSignUp) {
+        // Use the current origin, but fallback to environment variable if available
+        const baseUrl = typeof window !== 'undefined' 
+          ? window.location.origin 
+          : process.env.NEXT_PUBLIC_SITE_URL || 'http://localhost:3000'
+          
         const { error } = await supabase.auth.signUp({
           email,
           password,
           options: {
-            emailRedirectTo: `${location.origin}/auth/callback?redirectTo=${redirectTo || '/'}`,
+            emailRedirectTo: `${baseUrl}/auth/callback?redirectTo=${redirectTo || '/'}`,
           },
         })
         if (error) throw error
@@ -49,8 +54,6 @@ export function LoginForm({ redirectTo }: LoginFormProps) {
       setLoading(false)
     }
   }
-
-
 
   return (
     <div className="space-y-6">

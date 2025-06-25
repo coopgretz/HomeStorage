@@ -5,6 +5,7 @@ import Link from 'next/link'
 import { usePathname, useRouter } from 'next/navigation'
 import { createClient } from '@/lib/supabase/client'
 import type { User } from '@supabase/supabase-js'
+import ThemeToggle from './ThemeToggle'
 import {
   HomeIcon,
   MagnifyingGlassIcon,
@@ -14,6 +15,7 @@ import {
   XMarkIcon,
   UserIcon,
   TagIcon,
+  Cog6ToothIcon,
 } from '@heroicons/react/24/outline'
 
 const navigation = [
@@ -57,33 +59,30 @@ export default function Navigation() {
   }
 
   return (
-    <nav className="bg-white shadow-sm border-b border-gray-200">
+    <nav className="bg-white dark:bg-gray-800 shadow-sm border-b border-gray-200 dark:border-gray-700 transition-colors duration-200">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div className="flex justify-between h-16">
-          <div className="flex items-center">
-            <Link href="/" className="flex-shrink-0 flex items-center">
-              <ArchiveBoxIcon className="h-8 w-8 text-primary-600" />
-              <span className="ml-2 text-xl font-bold text-gray-900 hidden sm:block">
-                Storage System
-              </span>
-              <span className="ml-2 text-lg font-bold text-gray-900 sm:hidden">
-                Storage
-              </span>
-            </Link>
-
-            {/* Desktop Navigation */}
-            <div className="hidden md:ml-6 md:flex md:space-x-8">
+          {/* Logo and main navigation */}
+          <div className="flex">
+            <div className="flex-shrink-0 flex items-center">
+              <Link href="/" className="text-xl font-bold text-primary-600 dark:text-primary-400">
+                📦 HomeStorage
+              </Link>
+            </div>
+            
+            {/* Desktop navigation */}
+            <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
               {navigation.map((item) => {
                 const isActive = pathname === item.href
                 return (
                   <Link
                     key={item.name}
                     href={item.href}
-                    className={`inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200 ${
+                    className={`${
                       isActive
-                        ? 'border-primary-500 text-primary-600'
-                        : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300'
-                    }`}
+                        ? 'border-primary-500 text-gray-900 dark:text-gray-100'
+                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-300'
+                    } inline-flex items-center px-1 pt-1 border-b-2 text-sm font-medium transition-colors duration-200`}
                   >
                     <item.icon className="h-4 w-4 mr-2" />
                     {item.name}
@@ -93,51 +92,60 @@ export default function Navigation() {
             </div>
           </div>
 
-          {/* Desktop user menu */}
-          <div className="hidden md:flex items-center space-x-4">
+          {/* User menu */}
+          <div className="hidden sm:ml-6 sm:flex sm:items-center sm:space-x-4">
             {!loading && (
               <>
                 {user ? (
                   <div className="flex items-center space-x-4">
-                    <div className="flex items-center space-x-2">
-                      <UserIcon className="h-5 w-5 text-gray-400" />
-                      <span className="text-sm text-gray-700 truncate max-w-32">
-                        {user.email}
-                      </span>
-                    </div>
+                    <span className="text-sm text-gray-700 dark:text-gray-300 truncate max-w-32">
+                      {user.email}
+                    </span>
+                    <ThemeToggle />
+                    <Link
+                      href="/account"
+                      className={`${
+                        pathname === '/account'
+                          ? 'text-primary-600 dark:text-primary-400 bg-primary-50 dark:bg-primary-900/20'
+                          : 'text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700'
+                      } p-2 rounded-lg transition-colors duration-200`}
+                      title="Account Settings"
+                    >
+                      <Cog6ToothIcon className="h-5 w-5" />
+                    </Link>
                     <button
                       onClick={handleSignOut}
-                      className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                      className="text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 text-sm font-medium transition-colors duration-200"
                     >
                       Sign Out
                     </button>
                   </div>
                 ) : (
-                  <Link
-                    href="/login"
-                    className="inline-flex items-center px-3 py-2 border border-transparent text-sm leading-4 font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
-                  >
-                    Sign In
-                  </Link>
+                  <div className="flex items-center space-x-4">
+                    <ThemeToggle />
+                    <Link
+                      href="/login"
+                      className="text-primary-600 dark:text-primary-400 hover:text-primary-700 dark:hover:text-primary-300 text-sm font-medium transition-colors duration-200"
+                    >
+                      Sign In
+                    </Link>
+                  </div>
                 )}
               </>
             )}
           </div>
 
           {/* Mobile menu button */}
-          <div className="md:hidden flex items-center">
+          <div className="sm:hidden flex items-center space-x-2">
+            <ThemeToggle />
             <button
-              type="button"
-              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500"
-              aria-controls="mobile-menu"
-              aria-expanded="false"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              className="inline-flex items-center justify-center p-2 rounded-md text-gray-400 dark:text-gray-500 hover:text-gray-500 dark:hover:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-primary-500 transition-colors duration-200"
             >
-              <span className="sr-only">Open main menu</span>
               {mobileMenuOpen ? (
-                <XMarkIcon className="block h-6 w-6" aria-hidden="true" />
+                <XMarkIcon className="block h-6 w-6" />
               ) : (
-                <Bars3Icon className="block h-6 w-6" aria-hidden="true" />
+                <Bars3Icon className="block h-6 w-6" />
               )}
             </button>
           </div>
@@ -146,60 +154,74 @@ export default function Navigation() {
 
       {/* Mobile menu */}
       {mobileMenuOpen && (
-        <div className="md:hidden" id="mobile-menu">
-          <div className="pt-2 pb-3 space-y-1 bg-white border-t border-gray-200">
+        <div className="sm:hidden">
+          <div className="pt-2 pb-3 space-y-1">
             {navigation.map((item) => {
               const isActive = pathname === item.href
               return (
                 <Link
                   key={item.name}
                   href={item.href}
-                  className={`flex items-center pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200 ${
-                    isActive
-                      ? 'bg-primary-50 border-primary-500 text-primary-700'
-                      : 'border-transparent text-gray-600 hover:text-gray-800 hover:bg-gray-50 hover:border-gray-300'
-                  }`}
                   onClick={() => setMobileMenuOpen(false)}
+                  className={`${
+                    isActive
+                      ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-500 text-primary-700 dark:text-primary-300'
+                      : 'border-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-300'
+                  } block pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200`}
                 >
-                  <item.icon className="h-5 w-5 mr-3" />
-                  {item.name}
+                  <div className="flex items-center">
+                    <item.icon className="h-5 w-5 mr-3" />
+                    {item.name}
+                  </div>
                 </Link>
               )
             })}
-            
-            {/* Mobile user menu */}
-            {!loading && (
-              <div className="border-t border-gray-200 pt-4">
-                {user ? (
-                  <div className="space-y-1">
-                    <div className="flex items-center pl-3 pr-4 py-2">
-                      <UserIcon className="h-5 w-5 text-gray-400 mr-3" />
-                      <span className="text-sm text-gray-700 truncate">
-                        {user.email}
-                      </span>
-                    </div>
-                    <button
-                      onClick={() => {
-                        handleSignOut()
-                        setMobileMenuOpen(false)
-                      }}
-                      className="flex items-center w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-red-600 hover:text-red-800 hover:bg-red-50 hover:border-red-300"
-                    >
-                      Sign Out
-                    </button>
-                  </div>
-                ) : (
-                  <Link
-                    href="/login"
-                    onClick={() => setMobileMenuOpen(false)}
-                    className="flex items-center pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-primary-600 hover:text-primary-800 hover:bg-primary-50 hover:border-primary-300"
-                  >
-                    Sign In
-                  </Link>
-                )}
-              </div>
-            )}
           </div>
+          
+          {/* Mobile user menu */}
+          {!loading && (
+            <div className="border-t border-gray-200 dark:border-gray-700 pt-4">
+              {user ? (
+                <div className="space-y-1">
+                  <div className="flex items-center pl-3 pr-4 py-2">
+                    <UserIcon className="h-5 w-5 text-gray-400 dark:text-gray-500 mr-3" />
+                    <span className="text-sm text-gray-700 dark:text-gray-300 truncate">
+                      {user.email}
+                    </span>
+                  </div>
+                  <Link
+                    href="/account"
+                    onClick={() => setMobileMenuOpen(false)}
+                    className={`${
+                      pathname === '/account'
+                        ? 'bg-primary-50 dark:bg-primary-900/20 border-primary-500 text-primary-700 dark:text-primary-300'
+                        : 'border-transparent text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 hover:text-gray-700 dark:hover:text-gray-300'
+                    } flex items-center pl-3 pr-4 py-2 border-l-4 text-base font-medium transition-colors duration-200`}
+                  >
+                    <Cog6ToothIcon className="h-5 w-5 mr-3" />
+                    Account Settings
+                  </Link>
+                  <button
+                    onClick={() => {
+                      handleSignOut()
+                      setMobileMenuOpen(false)
+                    }}
+                    className="flex items-center w-full text-left pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-red-600 dark:text-red-400 hover:text-red-800 dark:hover:text-red-300 hover:bg-red-50 dark:hover:bg-red-900/20 hover:border-red-300 dark:hover:border-red-600 transition-colors duration-200"
+                  >
+                    Sign Out
+                  </button>
+                </div>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="flex items-center pl-3 pr-4 py-2 border-l-4 border-transparent text-base font-medium text-primary-600 dark:text-primary-400 hover:text-primary-800 dark:hover:text-primary-300 hover:bg-primary-50 dark:hover:bg-primary-900/20 hover:border-primary-300 dark:hover:border-primary-600 transition-colors duration-200"
+                >
+                  Sign In
+                </Link>
+              )}
+            </div>
+          )}
         </div>
       )}
     </nav>

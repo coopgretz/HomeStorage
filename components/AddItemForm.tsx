@@ -92,7 +92,7 @@ export default function AddItemForm() {
   return (
     <form onSubmit={handleSubmit} className="space-y-6">
       <div className="card">
-        <h2 className="text-lg font-semibold text-gray-900 mb-6">Item Details</h2>
+        <h2 className="text-lg font-semibold text-gray-900 dark:text-gray-100 mb-6 transition-colors duration-200">Item Details</h2>
         
         <div className="space-y-4">
           {/* Name */}

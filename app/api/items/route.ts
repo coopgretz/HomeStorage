@@ -21,7 +21,11 @@ export async function GET(request: NextRequest) {
     
     let query = supabase
       .from('items')
-      .select('*')
+      .select(`
+        *,
+        box:boxes(id, box_number, label, location),
+        category:categories(id, name, color)
+      `)
       .eq('user_id', user.id)
       .order('date_added', { ascending: false })
     
@@ -43,7 +47,17 @@ export async function GET(request: NextRequest) {
       throw error
     }
 
-    return NextResponse.json(items || [])
+    // Transform the data to flatten the box and category information
+    const transformedItems = items?.map(item => ({
+      ...item,
+      box_number: item.box?.box_number,
+      box_label: item.box?.label,
+      box_location: item.box?.location,
+      category_name: item.category?.name,
+      category_color: item.category?.color,
+    })) || []
+
+    return NextResponse.json(transformedItems)
   } catch (error) {
     console.error('Items GET error:', error)
     return NextResponse.json(
@@ -121,14 +135,28 @@ export async function POST(request: NextRequest) {
         image_path: image_path || null,
         notes: notes || null
       })
-      .select()
+      .select(`
+        *,
+        box:boxes(id, box_number, label, location),
+        category:categories(id, name, color)
+      `)
       .single()
 
     if (error) {
       throw error
     }
 
-    return NextResponse.json(newItem, { status: 201 })
+    // Transform the data to flatten the box and category information
+    const transformedItem = {
+      ...newItem,
+      box_number: newItem.box?.box_number,
+      box_label: newItem.box?.label,
+      box_location: newItem.box?.location,
+      category_name: newItem.category?.name,
+      category_color: newItem.category?.color,
+    }
+
+    return NextResponse.json(transformedItem, { status: 201 })
   } catch (error) {
     console.error('Items POST error:', error)
     return NextResponse.json(

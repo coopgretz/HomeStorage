@@ -1,8 +1,20 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { saveUploadedImage, isValidImageType, validateImageSize } from '@/lib/qr-utils'
+import { createClient } from '@/lib/supabase/server'
+import { uploadImage, isValidImageType, validateImageSize } from '@/lib/storage'
 
 export async function POST(request: NextRequest) {
   try {
+    const supabase = await createClient()
+    
+    // Get user to ensure they're authenticated
+    const { data: { user }, error: authError } = await supabase.auth.getUser()
+    if (authError || !user) {
+      return NextResponse.json(
+        { error: 'Unauthorized' },
+        { status: 401 }
+      )
+    }
+
     const formData = await request.formData()
     const file = formData.get('image') as File
     const type = formData.get('type') as string // 'box' or 'item'
@@ -30,7 +42,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file type
-    if (!isValidImageType(file.type)) {
+    if (!isValidImageType(file)) {
       return NextResponse.json(
         { error: 'Invalid file type. Only JPEG, PNG, GIF, and WebP are allowed.' },
         { status: 400 }
@@ -38,18 +50,38 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate file size
-    if (!validateImageSize(file.size)) {
+    if (!validateImageSize(file)) {
       return NextResponse.json(
         { error: 'File too large. Maximum size is 10MB.' },
         { status: 400 }
       )
     }
 
-    // Convert file to buffer
-    const buffer = Buffer.from(await file.arrayBuffer())
+    // Upload image to Supabase Storage with authenticated client
+    const imagePath = await uploadImage(supabase, file, type as 'box' | 'item', parseInt(id))
 
-    // Save image and get path
-    const imagePath = saveUploadedImage(buffer, file.name, type as 'box' | 'item', parseInt(id))
+    // Update the database record with the image path
+    if (type === 'box') {
+      const { error: updateError } = await supabase
+        .from('boxes')
+        .update({ image_path: imagePath })
+        .eq('id', parseInt(id))
+        .eq('user_id', user.id)
+
+      if (updateError) {
+        console.error('Failed to update box with image path:', updateError)
+      }
+    } else if (type === 'item') {
+      const { error: updateError } = await supabase
+        .from('items')
+        .update({ image_path: imagePath })
+        .eq('id', parseInt(id))
+        .eq('user_id', user.id)
+
+      if (updateError) {
+        console.error('Failed to update item with image path:', updateError)
+      }
+    }
 
     return NextResponse.json({
       success: true,

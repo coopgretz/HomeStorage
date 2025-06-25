@@ -6,7 +6,6 @@ export interface Box {
   description?: string
   location: string
   image_path?: string
-  qr_code_path?: string
   created_at: string
 }
 
