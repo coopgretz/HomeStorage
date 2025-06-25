@@ -22,7 +22,9 @@ export default function RecentItems() {
       const response = await fetch('/api/items?limit=5')
       if (response.ok) {
         const data = await response.json()
-        setItems(data)
+        // Handle both old and new API response formats for backward compatibility
+        const itemsArray = data.items || data
+        setItems(itemsArray)
       }
     } catch (error) {
       console.error('Error fetching recent items:', error)
@@ -160,9 +162,9 @@ export default function RecentItems() {
                     )}
                   </button>
                   <Link
-                    href={`/items/${item.id}`}
+                    href={`/items/${item.id}/edit`}
                     className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
-                    title="View details"
+                    title="Edit item"
                   >
                     <EyeIcon className="h-5 w-5" />
                   </Link>

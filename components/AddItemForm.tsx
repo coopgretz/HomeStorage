@@ -1,23 +1,29 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, useSearchParams } from 'next/navigation'
 import { Box, Category } from '@/lib/types'
 
 export default function AddItemForm() {
   const router = useRouter()
-  const [loading, setLoading] = useState(false)
-  const [boxes, setBoxes] = useState<Box[]>([])
-  const [categories, setCategories] = useState<Category[]>([])
+  const searchParams = useSearchParams()
+  const preselectedBoxId = searchParams.get('box_id')
+  
   const [formData, setFormData] = useState({
     name: '',
     description: '',
-    box_id: '',
+    box_id: preselectedBoxId || '',
     category_id: '',
     status: 'in_box',
-    quantity: 1,
+    quantity: '1',
     notes: '',
   })
+  
+  const [boxes, setBoxes] = useState<Box[]>([])
+  const [categories, setCategories] = useState<Category[]>([])
+  const [loading, setLoading] = useState(false)
+  const [image, setImage] = useState<File | null>(null)
+  const [imagePreview, setImagePreview] = useState<string | null>(null)
 
   useEffect(() => {
     fetchBoxesAndCategories()
@@ -27,20 +33,34 @@ export default function AddItemForm() {
     try {
       const [boxesResponse, categoriesResponse] = await Promise.all([
         fetch('/api/boxes'),
-        fetch('/api/categories'),
+        fetch('/api/categories')
       ])
-
+      
       if (boxesResponse.ok) {
         const boxesData = await boxesResponse.json()
         setBoxes(boxesData)
       }
-
+      
       if (categoriesResponse.ok) {
         const categoriesData = await categoriesResponse.json()
         setCategories(categoriesData)
       }
     } catch (error) {
       console.error('Error fetching data:', error)
+    }
+  }
+
+  const handleImageChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0]
+    if (file) {
+      setImage(file)
+      
+      // Create preview
+      const reader = new FileReader()
+      reader.onloadend = () => {
+        setImagePreview(reader.result as string)
+      }
+      reader.readAsDataURL(file)
     }
   }
 
@@ -55,6 +75,7 @@ export default function AddItemForm() {
     setLoading(true)
 
     try {
+      // First create the item
       const response = await fetch('/api/items', {
         method: 'POST',
         headers: {
@@ -67,15 +88,34 @@ export default function AddItemForm() {
         }),
       })
 
-      if (response.ok) {
-        router.push('/')
-      } else {
+      if (!response.ok) {
         const error = await response.json()
-        alert(`Error: ${error.error || 'Failed to create item'}`)
+        throw new Error(error.error || 'Failed to create item')
       }
-    } catch (error) {
+
+      const newItem = await response.json()
+
+      // Upload image if provided
+      if (image) {
+        const imageFormData = new FormData()
+        imageFormData.append('image', image)
+        imageFormData.append('type', 'item')
+        imageFormData.append('id', newItem.id.toString())
+
+        const imageResponse = await fetch('/api/upload', {
+          method: 'POST',
+          body: imageFormData,
+        })
+
+        if (!imageResponse.ok) {
+          console.warn('Image upload failed, but item was created')
+        }
+      }
+
+      router.push('/')
+    } catch (error: any) {
       console.error('Error creating item:', error)
-      alert('Failed to create item. Please try again.')
+      alert(`Error: ${error.message}`)
     } finally {
       setLoading(false)
     }
@@ -219,6 +259,65 @@ export default function AddItemForm() {
               className="input-field resize-none"
               placeholder="Any additional notes (optional)"
             />
+          </div>
+
+          {/* Image Upload */}
+          <div>
+            <label htmlFor="image" className="label">
+              Item Photo
+            </label>
+            
+            {imagePreview ? (
+              <div className="mt-1 mb-4">
+                <div className="relative inline-block">
+                  <img
+                    src={imagePreview}
+                    alt="Item preview"
+                    className="h-32 w-32 object-cover rounded-lg border border-gray-300 dark:border-gray-600"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => {
+                      setImagePreview(null)
+                      setImage(null)
+                    }}
+                    className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors duration-200"
+                  >
+                    <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                  </button>
+                </div>
+              </div>
+            ) : (
+              <div className="mt-1">
+                <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md hover:border-gray-400 dark:hover:border-gray-500 transition-colors duration-200">
+                  <div className="space-y-1 text-center">
+                    <svg className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+                    </svg>
+                    <div className="flex text-sm text-gray-600 dark:text-gray-400">
+                      <label
+                        htmlFor="image"
+                        className="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 transition-colors duration-200"
+                      >
+                        <span>Upload a photo</span>
+                        <input
+                          id="image"
+                          name="image"
+                          type="file"
+                          accept="image/*"
+                          onChange={handleImageChange}
+                          className="sr-only"
+                        />
+                      </label>
+                      <p className="pl-1">or drag and drop</p>
+                    </div>
+                    <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 10MB</p>
+                  </div>
+                </div>
+              </div>
+            )}
           </div>
         </div>
       </div>

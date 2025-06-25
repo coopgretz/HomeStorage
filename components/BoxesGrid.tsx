@@ -58,13 +58,6 @@ export default function BoxesGrid() {
         <h2 className="text-xl font-semibold text-gray-900 dark:text-gray-100 transition-colors duration-200">
           Your Storage Boxes ({boxes.length})
         </h2>
-        <Link
-          href="/boxes/add"
-          className="inline-flex items-center px-4 py-2 bg-primary-600 dark:bg-primary-700 text-white rounded-lg hover:bg-primary-700 dark:hover:bg-primary-600 transition-colors duration-200"
-        >
-          <PlusIcon className="h-4 w-4 mr-2" />
-          Add Box
-        </Link>
       </div>
 
       {boxes.length === 0 ? (

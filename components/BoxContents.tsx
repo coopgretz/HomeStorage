@@ -46,8 +46,10 @@ export default function BoxContents({ boxId }: Props) {
       }
 
       if (itemsResponse.ok) {
-        const itemsData = await itemsResponse.json()
-        setItems(itemsData)
+        const data = await itemsResponse.json()
+        // Handle both old and new API response formats for backward compatibility
+        const itemsArray = data.items || data
+        setItems(itemsArray)
       }
     } catch (error) {
       console.error('Error fetching box contents:', error)

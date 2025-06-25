@@ -2,17 +2,27 @@
 
 import { useState, useEffect } from 'react'
 import { Item, Category, Box } from '@/lib/types'
-import {
-  MagnifyingGlassIcon,
-  CheckCircleIcon,
-  ExclamationCircleIcon,
-  EyeIcon,
-  FunnelIcon,
-  PencilIcon,
-  PhotoIcon,
-} from '@heroicons/react/24/outline'
 import Link from 'next/link'
 import Image from 'next/image'
+import {
+  MagnifyingGlassIcon,
+  FunnelIcon,
+  CheckCircleIcon,
+  ExclamationCircleIcon,
+  PencilIcon,
+  EyeIcon,
+  PhotoIcon,
+  ChevronLeftIcon,
+  ChevronRightIcon,
+} from '@heroicons/react/24/outline'
+
+interface PaginationInfo {
+  page: number
+  limit: number
+  total: number
+  totalPages: number
+  hasMore: boolean
+}
 
 export default function SearchInterface() {
   const [searchTerm, setSearchTerm] = useState('')
@@ -21,59 +31,70 @@ export default function SearchInterface() {
   const [categories, setCategories] = useState<Category[]>([])
   const [boxes, setBoxes] = useState<Box[]>([])
   const [loading, setLoading] = useState(false)
+  const [showFilters, setShowFilters] = useState(false)
   const [statusFilter, setStatusFilter] = useState<'all' | 'in_box' | 'out_of_box'>('all')
   const [categoryFilter, setCategoryFilter] = useState<string>('all')
   const [roomFilter, setRoomFilter] = useState<string>('all')
-  const [showFilters, setShowFilters] = useState(false)
+  const [pagination, setPagination] = useState<PaginationInfo>({
+    page: 1,
+    limit: 20,
+    total: 0,
+    totalPages: 0,
+    hasMore: false
+  })
 
-  // Fetch categories and boxes for filters
   useEffect(() => {
-    const fetchFilters = async () => {
-      try {
-        const [categoriesRes, boxesRes] = await Promise.all([
-          fetch('/api/categories'),
-          fetch('/api/boxes')
-        ])
-        
-        if (categoriesRes.ok) {
-          const categoriesData = await categoriesRes.json()
-          setCategories(categoriesData)
-        }
-        
-        if (boxesRes.ok) {
-          const boxesData = await boxesRes.json()
-          setBoxes(boxesData)
-        }
-      } catch (error) {
-        console.error('Error fetching filter data:', error)
-      }
-    }
-    
     fetchFilters()
+    // Load items by default on component mount
+    searchItems(1)
   }, [])
 
   useEffect(() => {
-    if (searchTerm.trim()) {
-      searchItems()
-    } else {
-      setItems([])
-      setFilteredItems([])
-    }
-  }, [searchTerm])
+    // Reset to page 1 when search term or filters change
+    searchItems(1)
+  }, [searchTerm, statusFilter, categoryFilter, roomFilter])
 
   useEffect(() => {
     filterItems()
   }, [items, statusFilter, categoryFilter, roomFilter])
 
-  const searchItems = async () => {
-    if (!searchTerm.trim()) return
-    
+  const fetchFilters = async () => {
+    try {
+      const [categoriesResponse, boxesResponse] = await Promise.all([
+        fetch('/api/categories'),
+        fetch('/api/boxes')
+      ])
+      
+      if (categoriesResponse.ok) {
+        const categoriesData = await categoriesResponse.json()
+        setCategories(categoriesData)
+      }
+      
+      if (boxesResponse.ok) {
+        const boxesData = await boxesResponse.json()
+        setBoxes(boxesData)
+      }
+    } catch (error) {
+      console.error('Error fetching filters:', error)
+    }
+  }
+
+  const searchItems = async (page: number = 1) => {
     setLoading(true)
     try {
-      const response = await fetch(`/api/items?search=${encodeURIComponent(searchTerm)}`)
+      const searchParams = new URLSearchParams()
+      searchParams.append('page', page.toString())
+      searchParams.append('limit', pagination.limit.toString())
+      
+      if (searchTerm.trim()) {
+        searchParams.append('search', searchTerm)
+      }
+      
+      const response = await fetch(`/api/items?${searchParams.toString()}`)
       if (response.ok) {
         const data = await response.json()
-        setItems(data)
+        setItems(data.items || [])
+        setPagination(data.pagination || pagination)
       }
     } catch (error) {
       console.error('Search error:', error)
@@ -98,6 +119,12 @@ export default function SearchInterface() {
     }
     
     setFilteredItems(filtered)
+  }
+
+  const handlePageChange = (newPage: number) => {
+    if (newPage >= 1 && newPage <= pagination.totalPages) {
+      searchItems(newPage)
+    }
   }
 
   // Get unique room locations from boxes
@@ -125,6 +152,15 @@ export default function SearchInterface() {
     }
   }
 
+  const clearFilters = () => {
+    setSearchTerm('')
+    setStatusFilter('all')
+    setCategoryFilter('all')
+    setRoomFilter('all')
+  }
+
+  const hasActiveFilters = searchTerm || statusFilter !== 'all' || categoryFilter !== 'all' || roomFilter !== 'all'
+
   return (
     <div>
       {/* Search Bar */}
@@ -135,7 +171,7 @@ export default function SearchInterface() {
           </div>
           <input
             type="text"
-            placeholder="Search items by name, description, or category..."
+            placeholder="Search items by name, description, or notes..."
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
             className="block w-full pl-10 pr-3 py-3 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent text-base transition-colors duration-200"
@@ -144,13 +180,29 @@ export default function SearchInterface() {
         
         {/* Filters */}
         <div className="mt-4">
-          <button
-            onClick={() => setShowFilters(!showFilters)}
-            className="flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-200"
-          >
-            <FunnelIcon className="h-4 w-4 mr-2" />
-            Filters
-          </button>
+          <div className="flex items-center justify-between">
+            <button
+              onClick={() => setShowFilters(!showFilters)}
+              className="flex items-center text-sm text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200 transition-colors duration-200"
+            >
+              <FunnelIcon className="h-4 w-4 mr-2" />
+              Filters
+              {hasActiveFilters && (
+                <span className="ml-2 inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-primary-100 dark:bg-primary-900/30 text-primary-800 dark:text-primary-200">
+                  Active
+                </span>
+              )}
+            </button>
+            
+            {hasActiveFilters && (
+              <button
+                onClick={clearFilters}
+                className="text-sm text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-200 transition-colors duration-200"
+              >
+                Clear all
+              </button>
+            )}
+          </div>
           
           {showFilters && (
             <div className="mt-3 space-y-4">
@@ -226,17 +278,43 @@ export default function SearchInterface() {
       {loading && (
         <div className="text-center py-8">
           <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-primary-600 dark:border-primary-400"></div>
-          <p className="mt-2 text-gray-600 dark:text-gray-400 transition-colors duration-200">Searching...</p>
+          <p className="mt-2 text-gray-600 dark:text-gray-400 transition-colors duration-200">Loading items...</p>
         </div>
       )}
 
-      {searchTerm && !loading && filteredItems.length === 0 && (
+      {!loading && filteredItems.length === 0 && pagination.total > 0 && (
         <div className="card text-center py-12">
           <MagnifyingGlassIcon className="h-12 w-12 mx-auto text-gray-400 dark:text-gray-500 mb-4 transition-colors duration-200" />
-          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-200">No items found</h3>
-          <p className="text-gray-600 dark:text-gray-400 transition-colors duration-200">
-            Try searching with different keywords or check your filters.
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-200">No items match your filters</h3>
+          <p className="text-gray-600 dark:text-gray-400 transition-colors duration-200 mb-4">
+            Try adjusting your search terms or filters to see more results.
           </p>
+          <button
+            onClick={clearFilters}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200"
+          >
+            Clear filters
+          </button>
+        </div>
+      )}
+
+      {!loading && pagination.total === 0 && (
+        <div className="card text-center py-12">
+          <div className="text-gray-400 dark:text-gray-500 mb-4 transition-colors duration-200">
+            <svg className="mx-auto h-12 w-12" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 dark:text-gray-100 mb-2 transition-colors duration-200">No items yet</h3>
+          <p className="text-gray-600 dark:text-gray-400 mb-6 transition-colors duration-200">
+            Start by adding your first item to the storage system.
+          </p>
+          <Link
+            href="/items/add"
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200"
+          >
+            Add First Item
+          </Link>
         </div>
       )}
 
@@ -244,7 +322,8 @@ export default function SearchInterface() {
         <div>
           <div className="flex items-center justify-between mb-4">
             <p className="text-sm text-gray-600 dark:text-gray-400 transition-colors duration-200">
-              Found {filteredItems.length} item{filteredItems.length !== 1 ? 's' : ''}
+              Showing {filteredItems.length} of {pagination.total} item{pagination.total !== 1 ? 's' : ''}
+              {hasActiveFilters && ' (filtered)'}
             </p>
           </div>
           
@@ -348,9 +427,9 @@ export default function SearchInterface() {
                       <PencilIcon className="h-5 w-5" />
                     </Link>
                     <Link
-                      href={`/items/${item.id}`}
+                      href={`/items/${item.id}/edit`}
                       className="p-2 text-gray-400 dark:text-gray-500 hover:text-gray-600 dark:hover:text-gray-300 hover:bg-gray-50 dark:hover:bg-gray-700 rounded-lg transition-colors duration-200"
-                      title="View details"
+                      title="Edit item"
                     >
                       <EyeIcon className="h-5 w-5" />
                     </Link>
@@ -359,6 +438,75 @@ export default function SearchInterface() {
               </div>
             ))}
           </div>
+
+          {/* Pagination */}
+          {pagination.totalPages > 1 && (
+            <div className="mt-6 flex items-center justify-between border-t border-gray-200 dark:border-gray-700 pt-6">
+              <div className="flex-1 flex justify-between sm:hidden">
+                <button
+                  onClick={() => handlePageChange(pagination.page - 1)}
+                  disabled={pagination.page <= 1}
+                  className="relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={() => handlePageChange(pagination.page + 1)}
+                  disabled={pagination.page >= pagination.totalPages}
+                  className="ml-3 relative inline-flex items-center px-4 py-2 border border-gray-300 dark:border-gray-600 text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-800 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                >
+                  Next
+                </button>
+              </div>
+              <div className="hidden sm:flex-1 sm:flex sm:items-center sm:justify-between">
+                <div>
+                  <p className="text-sm text-gray-700 dark:text-gray-300 transition-colors duration-200">
+                    Showing page <span className="font-medium">{pagination.page}</span> of{' '}
+                    <span className="font-medium">{pagination.totalPages}</span>
+                  </p>
+                </div>
+                <div>
+                  <nav className="relative z-0 inline-flex rounded-md shadow-sm -space-x-px" aria-label="Pagination">
+                    <button
+                      onClick={() => handlePageChange(pagination.page - 1)}
+                      disabled={pagination.page <= 1}
+                      className="relative inline-flex items-center px-2 py-2 rounded-l-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                    >
+                      <ChevronLeftIcon className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                    
+                    {/* Page numbers */}
+                    {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                      const pageNum = Math.max(1, Math.min(pagination.totalPages - 4, pagination.page - 2)) + i
+                      if (pageNum > pagination.totalPages) return null
+                      
+                      return (
+                        <button
+                          key={pageNum}
+                          onClick={() => handlePageChange(pageNum)}
+                          className={`relative inline-flex items-center px-4 py-2 border text-sm font-medium transition-colors duration-200 ${
+                            pageNum === pagination.page
+                              ? 'z-10 bg-primary-50 dark:bg-primary-900/50 border-primary-500 text-primary-600 dark:text-primary-400'
+                              : 'bg-white dark:bg-gray-800 border-gray-300 dark:border-gray-600 text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700'
+                          }`}
+                        >
+                          {pageNum}
+                        </button>
+                      )
+                    })}
+                    
+                    <button
+                      onClick={() => handlePageChange(pagination.page + 1)}
+                      disabled={pagination.page >= pagination.totalPages}
+                      className="relative inline-flex items-center px-2 py-2 rounded-r-md border border-gray-300 dark:border-gray-600 bg-white dark:bg-gray-800 text-sm font-medium text-gray-500 dark:text-gray-400 hover:bg-gray-50 dark:hover:bg-gray-700 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200"
+                    >
+                      <ChevronRightIcon className="h-5 w-5" aria-hidden="true" />
+                    </button>
+                  </nav>
+                </div>
+              </div>
+            </div>
+          )}
         </div>
       )}
     </div>

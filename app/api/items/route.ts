@@ -15,7 +15,9 @@ export async function GET(request: NextRequest) {
     }
 
     const { searchParams } = new URL(request.url)
-    const limit = searchParams.get('limit')
+    const limit = parseInt(searchParams.get('limit') || '20')
+    const page = parseInt(searchParams.get('page') || '1')
+    const offset = (page - 1) * limit
     const search = searchParams.get('search')
     const boxId = searchParams.get('box_id')
     
@@ -37,9 +39,14 @@ export async function GET(request: NextRequest) {
       query = query.eq('box_id', parseInt(boxId))
     }
     
-    if (limit) {
-      query = query.limit(parseInt(limit))
-    }
+    // Get total count for pagination
+    const { count } = await supabase
+      .from('items')
+      .select('*', { count: 'exact', head: true })
+      .eq('user_id', user.id)
+
+    // Apply pagination
+    query = query.range(offset, offset + limit - 1)
 
     const { data: items, error } = await query
 
@@ -57,7 +64,16 @@ export async function GET(request: NextRequest) {
       category_color: item.category?.color,
     })) || []
 
-    return NextResponse.json(transformedItems)
+    return NextResponse.json({
+      items: transformedItems,
+      pagination: {
+        page,
+        limit,
+        total: count || 0,
+        totalPages: Math.ceil((count || 0) / limit),
+        hasMore: offset + limit < (count || 0)
+      }
+    })
   } catch (error) {
     console.error('Items GET error:', error)
     return NextResponse.json(

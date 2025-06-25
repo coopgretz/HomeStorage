@@ -129,30 +129,30 @@ export default function AddBoxPage() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 py-8">
+    <div className="min-h-screen bg-gray-50 dark:bg-gray-900 py-8 transition-colors duration-200">
       <div className="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="mb-8">
           <Link
             href="/boxes"
-            className="inline-flex items-center text-sm font-medium text-gray-500 hover:text-gray-700 mb-4"
+            className="inline-flex items-center text-sm font-medium text-gray-500 dark:text-gray-400 hover:text-gray-700 dark:hover:text-gray-300 mb-4 transition-colors duration-200"
           >
             <ArrowLeftIcon className="h-4 w-4 mr-1" />
             Back to Boxes
           </Link>
-          <h1 className="text-3xl font-bold text-gray-900 flex items-center">
-            <ArchiveBoxIcon className="h-8 w-8 mr-3 text-primary-600" />
+          <h1 className="text-3xl font-bold text-gray-900 dark:text-white flex items-center transition-colors duration-200">
+            <ArchiveBoxIcon className="h-8 w-8 mr-3 text-primary-600 dark:text-primary-400" />
             Add New Storage Box
           </h1>
-          <p className="mt-2 text-gray-600">
+          <p className="mt-2 text-gray-600 dark:text-gray-300 transition-colors duration-200">
             Create a new storage box to organize your items
           </p>
         </div>
 
         {/* Form */}
-        <div className="bg-white shadow rounded-lg p-6">
+        <div className="bg-white dark:bg-gray-800 shadow rounded-lg p-6 transition-colors duration-200">
           {error && (
-            <div className="mb-6 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded">
+            <div className="mb-6 bg-red-50 dark:bg-red-900/20 border border-red-200 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded transition-colors duration-200">
               {error}
             </div>
           )}
@@ -160,7 +160,7 @@ export default function AddBoxPage() {
           <form onSubmit={handleSubmit} className="space-y-6">
             {/* Box Number */}
             <div>
-              <label htmlFor="box_number" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="box_number" className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
                 Box Number *
               </label>
               <div className="mt-1 relative">
@@ -173,7 +173,7 @@ export default function AddBoxPage() {
                   value={formData.box_number}
                   onChange={handleInputChange}
                   disabled={loadingBoxNumber}
-                  className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-50 disabled:text-gray-500"
+                  className="block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 disabled:bg-gray-50 dark:disabled:bg-gray-800 disabled:text-gray-500 dark:disabled:text-gray-400 transition-colors duration-200"
                   placeholder={loadingBoxNumber ? "Loading..." : "Enter box number"}
                 />
                 {loadingBoxNumber && (
@@ -182,7 +182,7 @@ export default function AddBoxPage() {
                   </div>
                 )}
               </div>
-              <p className="mt-1 text-xs text-gray-500">
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 transition-colors duration-200">
                 {loadingBoxNumber 
                   ? "Finding next available number..." 
                   : "Auto-generated based on existing boxes. You can change this if needed."
@@ -192,7 +192,7 @@ export default function AddBoxPage() {
 
             {/* Label */}
             <div>
-              <label htmlFor="label" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="label" className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
                 Label
               </label>
               <input
@@ -201,14 +201,17 @@ export default function AddBoxPage() {
                 name="label"
                 value={formData.label}
                 onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                placeholder="Enter a descriptive label (e.g., Electronics, Kitchen Items)"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200"
+                placeholder="e.g., Kitchen Items, Winter Clothes"
               />
+              <p className="mt-1 text-xs text-gray-500 dark:text-gray-400 transition-colors duration-200">
+                Optional: Give your box a descriptive name
+              </p>
             </div>
 
             {/* Description */}
             <div>
-              <label htmlFor="description" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="description" className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
                 Description
               </label>
               <textarea
@@ -217,87 +220,107 @@ export default function AddBoxPage() {
                 rows={3}
                 value={formData.description}
                 onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
-                placeholder="Enter a detailed description of what's in this box"
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 placeholder-gray-400 dark:placeholder-gray-500 focus:outline-none focus:ring-primary-500 focus:border-primary-500 resize-none transition-colors duration-200"
+                placeholder="Describe what this box will contain..."
               />
             </div>
 
             {/* Location */}
             <div>
-              <label htmlFor="location" className="block text-sm font-medium text-gray-700">
-                Location
+              <label htmlFor="location" className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
+                Location *
               </label>
               <select
                 id="location"
                 name="location"
                 value={formData.location}
                 onChange={handleInputChange}
-                className="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-primary-500 focus:border-primary-500"
+                required
+                className="mt-1 block w-full px-3 py-2 border border-gray-300 dark:border-gray-600 rounded-md shadow-sm bg-white dark:bg-gray-700 text-gray-900 dark:text-gray-100 focus:outline-none focus:ring-primary-500 focus:border-primary-500 transition-colors duration-200"
               >
                 <option value="Garage">Garage</option>
                 <option value="Basement">Basement</option>
                 <option value="Attic">Attic</option>
-                <option value="Storage Room">Storage Room</option>
+                <option value="Bedroom">Bedroom</option>
+                <option value="Living Room">Living Room</option>
+                <option value="Kitchen">Kitchen</option>
                 <option value="Closet">Closet</option>
-                <option value="Shed">Shed</option>
+                <option value="Storage Unit">Storage Unit</option>
                 <option value="Other">Other</option>
               </select>
             </div>
 
             {/* Image Upload */}
             <div>
-              <label htmlFor="image" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="image" className="block text-sm font-medium text-gray-700 dark:text-gray-300 transition-colors duration-200">
                 Box Photo
               </label>
-              <div className="mt-1 flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 border-dashed rounded-md">
-                <div className="space-y-1 text-center">
-                  {imagePreview ? (
-                    <div className="mb-4">
-                      <img
-                        src={imagePreview}
-                        alt="Preview"
-                        className="mx-auto h-32 w-32 object-cover rounded-lg"
-                      />
-                    </div>
-                  ) : (
-                    <PhotoIcon className="mx-auto h-12 w-12 text-gray-400" />
-                  )}
-                  <div className="flex text-sm text-gray-600">
-                    <label
-                      htmlFor="image"
-                      className="relative cursor-pointer bg-white rounded-md font-medium text-primary-600 hover:text-primary-500 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500"
+              
+              {imagePreview ? (
+                <div className="mt-1 mb-4">
+                  <div className="relative inline-block">
+                    <img
+                      src={imagePreview}
+                      alt="Box preview"
+                      className="h-32 w-32 object-cover rounded-lg border border-gray-300 dark:border-gray-600"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setImagePreview(null)
+                        setFormData(prev => ({ ...prev, image: null }))
+                      }}
+                      className="absolute -top-2 -right-2 bg-red-500 hover:bg-red-600 text-white rounded-full p-1 transition-colors duration-200"
                     >
-                      <span>Upload a photo</span>
-                      <input
-                        id="image"
-                        name="image"
-                        type="file"
-                        accept="image/*"
-                        onChange={handleImageChange}
-                        className="sr-only"
-                      />
-                    </label>
-                    <p className="pl-1">or drag and drop</p>
+                      <svg className="h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                      </svg>
+                    </button>
                   </div>
-                  <p className="text-xs text-gray-500">PNG, JPG, GIF up to 10MB</p>
                 </div>
-              </div>
+              ) : (
+                <div className="mt-1">
+                  <div className="flex justify-center px-6 pt-5 pb-6 border-2 border-gray-300 dark:border-gray-600 border-dashed rounded-md hover:border-gray-400 dark:hover:border-gray-500 transition-colors duration-200">
+                    <div className="space-y-1 text-center">
+                      <PhotoIcon className="mx-auto h-12 w-12 text-gray-400 dark:text-gray-500" />
+                      <div className="flex text-sm text-gray-600 dark:text-gray-400">
+                        <label
+                          htmlFor="image"
+                          className="relative cursor-pointer bg-white dark:bg-gray-800 rounded-md font-medium text-primary-600 dark:text-primary-400 hover:text-primary-500 dark:hover:text-primary-300 focus-within:outline-none focus-within:ring-2 focus-within:ring-offset-2 focus-within:ring-primary-500 transition-colors duration-200"
+                        >
+                          <span>Upload a photo</span>
+                          <input
+                            id="image"
+                            name="image"
+                            type="file"
+                            accept="image/*"
+                            onChange={handleImageChange}
+                            className="sr-only"
+                          />
+                        </label>
+                        <p className="pl-1">or drag and drop</p>
+                      </div>
+                      <p className="text-xs text-gray-500 dark:text-gray-400">PNG, JPG, GIF up to 10MB</p>
+                    </div>
+                  </div>
+                </div>
+              )}
             </div>
 
-            {/* Submit Button */}
-            <div className="flex justify-end space-x-3">
+            {/* Submit Buttons */}
+            <div className="flex flex-col sm:flex-row gap-3 sm:justify-end">
               <Link
                 href="/boxes"
-                className="px-4 py-2 border border-gray-300 rounded-md shadow-sm text-sm font-medium text-gray-700 bg-white hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500"
+                className="inline-flex justify-center items-center px-4 py-2 border border-gray-300 dark:border-gray-600 shadow-sm text-sm font-medium rounded-md text-gray-700 dark:text-gray-300 bg-white dark:bg-gray-700 hover:bg-gray-50 dark:hover:bg-gray-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 transition-colors duration-200 order-2 sm:order-1"
               >
                 Cancel
               </Link>
               <button
                 type="submit"
-                disabled={loading || loadingBoxNumber}
-                className="px-4 py-2 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-primary-600 hover:bg-primary-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed"
+                disabled={loading}
+                className="inline-flex justify-center items-center px-4 py-2 border border-transparent shadow-sm text-sm font-medium rounded-md text-white bg-primary-600 hover:bg-primary-700 dark:bg-primary-700 dark:hover:bg-primary-600 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-primary-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors duration-200 order-1 sm:order-2"
               >
-                {loading ? 'Creating...' : loadingBoxNumber ? 'Loading...' : 'Create Box'}
+                {loading ? 'Creating Box...' : 'Create Box'}
               </button>
             </div>
           </form>
